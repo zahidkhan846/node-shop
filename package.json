@@ -1,7 +1,7 @@
 {
-  "name": "nodejs-tutorial",
+  "name": "store",
   "version": "1.0.0",
-  "description": "mongodb+srv://zake:Mu0QRhZn4yV5CJwN@cluster0.ecnox.mongodb.net/store?retryWrites=true&w=majority",
+  "description": "e commerece store",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zahidkhan846/node-express.git"
+    "url": "https://github.com/zahidkhan846/node-shop.git"
   },
   "author": "zahid",
   "license": "ISC",
@@ -21,6 +21,7 @@
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "mongodb": "^3.6.3",
+    "mongoose": "^5.11.7",
     "mysql2": "^2.2.5",
     "sequelize": "^6.3.5"
   }
