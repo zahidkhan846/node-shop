@@ -2,18 +2,18 @@ const path = require("path");
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
-
-const adminRoutes = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
-const mongoose = require("mongoose");
 
 const app = express();
 
 app.set("view engine", "ejs");
 app.set("views", "views");
+
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
@@ -36,12 +36,12 @@ mongoose
   .connect(
     "mongodb+srv://zake:Mu0QRhZn4yV5CJwN@cluster0.ecnox.mongodb.net/store?retryWrites=true&w=majority"
   )
-  .then((res) => {
+  .then((result) => {
     User.findOne().then((user) => {
       if (!user) {
         const user = new User({
-          name: "Zahid",
-          email: "zahid.khan846@hotmail.com",
+          name: "Max",
+          email: "max@test.com",
           cart: {
             items: [],
           },
@@ -49,8 +49,8 @@ mongoose
         user.save();
       }
     });
-    console.log("[CONNECTED*] Listning at http://localhost:3000/");
     app.listen(3000);
+    console.log("[CONNECTED] Served at http://localhost:3000/");
   })
   .catch((err) => {
     console.log(err);
