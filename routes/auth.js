@@ -1,5 +1,6 @@
 const express = require("express");
-
+const { check, body } = require("express-validator");
+const User = require("../models/user");
 const authController = require("../controllers/auth");
 
 const router = express.Router();
@@ -10,7 +11,34 @@ router.get("/signup", authController.getSignup);
 
 router.post("/login", authController.postLogin);
 
-router.post("/signup", authController.postSignup);
+router.post(
+  "/signup",
+  [
+    check("email")
+      .isEmail()
+      .withMessage("Do you even know how the fuck an email look like")
+      .custom((value, { req }) => {
+        return User.findOne({ email: value }).then((userDoc) => {
+          if (userDoc) {
+            return Promise.reject("User already exists");
+          }
+        });
+      }),
+    body(
+      "password",
+      "Password should be 5 charcter long and should be alphanumeric value."
+    )
+      .isAlphanumeric()
+      .isLength({ min: 5 }),
+    body("confirmPassword").custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error("Password did not match.");
+      }
+      return true;
+    }),
+  ],
+  authController.postSignup
+);
 
 router.post("/logout", authController.postLogout);
 

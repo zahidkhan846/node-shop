@@ -4,6 +4,7 @@ const User = require("../models/user");
 const sgMail = require("@sendgrid/mail");
 
 const crypto = require("crypto");
+const { validationResult } = require("express-validator");
 
 sgMail.setApiKey(
   "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"
@@ -71,40 +72,35 @@ exports.postLogin = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
-  User.findOne({ email: email })
-    .then((userDoc) => {
-      if (userDoc) {
-        req.flash(
-          "error",
-          "E-Mail exists already, please pick a different one."
-        );
-        return res.redirect("/signup");
-      }
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-            cart: { items: [] },
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect("/login");
-          return sgMail.send({
-            to: email,
-            from: "zahid.khan846@hotmail.com",
-            subject: "Sending with SendGrid is Fun",
-            html: "<strong>Hello from code with zahid</strong>",
-          });
-        })
-        .catch((err) => console.log(err));
-    })
-    .catch((err) => {
-      console.log(err);
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/signup", {
+      path: "/signup",
+      pageTitle: "Signup",
+      errorMessage: errors.array()[0].msg,
     });
+  }
+  bcrypt
+    .hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email: email,
+        password: hashedPassword,
+        cart: { items: [] },
+      });
+      return user.save();
+    })
+    .then(() => {
+      res.redirect("/login");
+      return sgMail.send({
+        to: email,
+        from: "zahid.khan846@hotmail.com",
+        subject: "Sending with SendGrid is Fun",
+        html: "<strong>Hello from code with zahid</strong>",
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.postLogout = (req, res, next) => {
