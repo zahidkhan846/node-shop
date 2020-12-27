@@ -21,6 +21,11 @@ exports.getLogin = (req, res, next) => {
     path: "/login",
     pageTitle: "Login",
     errorMessage: message,
+    oldInput: {
+      password: "",
+      email: "",
+    },
+    validationErrors: [],
   });
 };
 
@@ -35,17 +40,46 @@ exports.getSignup = (req, res, next) => {
     path: "/signup",
     pageTitle: "Signup",
     errorMessage: message,
+    oldInput: {
+      password: "",
+      email: "",
+      confirmPassword: "",
+    },
+    validationErrors: [],
   });
 };
 
 exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/login", {
+      path: "/login",
+      pageTitle: "Login",
+      errorMessage: errors.array()[0].msg,
+      oldInput: {
+        email: email,
+        password: password,
+      },
+      validationErrors: errors.array(),
+    });
+  }
+
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
-        req.flash("error", "Invalid email or password.");
-        return res.redirect("/login");
+        return res.status(422).render("auth/login", {
+          path: "/login",
+          pageTitle: "Login",
+          errorMessage: "Invalid email or password",
+          oldInput: {
+            email: email,
+            password: password,
+          },
+          validationErrors: [],
+        });
       }
       bcrypt
         .compare(password, user.password)
@@ -58,15 +92,27 @@ exports.postLogin = (req, res, next) => {
               res.redirect("/");
             });
           }
-          req.flash("error", "Invalid email or password.");
-          res.redirect("/login");
+          return res.status(422).render("auth/login", {
+            path: "/login",
+            pageTitle: "Login",
+            errorMessage: "Invalid email or password",
+            oldInput: {
+              email: email,
+              password: password,
+            },
+            validationErrors: [],
+          });
         })
         .catch((err) => {
           console.log(err);
           res.redirect("/login");
         });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(500);
+    });
 };
 
 exports.postSignup = (req, res, next) => {
@@ -79,6 +125,12 @@ exports.postSignup = (req, res, next) => {
       path: "/signup",
       pageTitle: "Signup",
       errorMessage: errors.array()[0].msg,
+      oldInput: {
+        password: password,
+        email: email,
+        confirmPassword: req.body.confirmPassword,
+      },
+      validationErrors: errors.array(),
     });
   }
   bcrypt
@@ -100,7 +152,11 @@ exports.postSignup = (req, res, next) => {
         html: "<strong>Hello from code with zahid</strong>",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(500);
+    });
 };
 
 exports.postLogout = (req, res, next) => {
@@ -156,7 +212,11 @@ exports.postReset = (req, res, next) => {
           `,
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(500);
+      });
   });
 };
 
@@ -181,7 +241,11 @@ exports.getNewPassword = (req, res, next) => {
         errorMessage: message,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(500);
+    });
 };
 
 exports.postNewPassword = (req, res, next) => {
@@ -209,5 +273,9 @@ exports.postNewPassword = (req, res, next) => {
     .then(() => {
       res.redirect("/login");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(500);
+    });
 };
