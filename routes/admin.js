@@ -27,7 +27,7 @@ router.get(
   isAuth,
   [
     body("price").isNumeric(),
-    body("description").isString().isLength({ min: 10, max: 100 }),
+    body("description").isString().isLength({ min: 10, max: 1000 }),
   ],
   adminController.getEditProduct
 );
