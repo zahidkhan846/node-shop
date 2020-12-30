@@ -17,7 +17,7 @@ router.post(
   isAuth,
   [
     body("price").isNumeric(),
-    body("description").isString().isLength({ min: 10, max: 100 }),
+    body("description").isString().isLength({ min: 10, max: 1000 }),
   ],
   adminController.postAddProduct
 );
@@ -34,6 +34,6 @@ router.get(
 
 router.post("/edit-product", isAuth, adminController.postEditProduct);
 
-router.post("/delete-product", isAuth, adminController.postDeleteProduct);
+router.delete("/product/:productId", isAuth, adminController.deleteProduct);
 
 module.exports = router;
