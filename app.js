@@ -7,13 +7,16 @@ const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const compression = require("compression");
+const fs = require("fs");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 const multer = require("multer");
+const helmet = require("helmet");
+const morgan = require("morgan");
 
-const MONGODB_URI =
-  "mongodb+srv://zake:Mu0QRhZn4yV5CJwN@cluster0.ecnox.mongodb.net/store";
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const app = express();
 const store = new MongoDBStore({
@@ -49,6 +52,14 @@ app.set("views", "views");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
+
+const logStream = fs.createWriteStream(path.join(__dirname, "access.log"), {
+  flags: "a",
+});
+
+app.use(helmet());
+app.use(compression());
+app.use(morgan("combined", { stream: logStream }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(

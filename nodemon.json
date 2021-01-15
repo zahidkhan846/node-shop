@@ -1,0 +1,6 @@
+{
+  "env": {
+    "MONGODB_URI": "mongodb+srv://zake:Mu0QRhZn4yV5CJwN@cluster0.ecnox.mongodb.net/store",
+    "STRIPE_KEY": "sk_test_51HsVzfFZQkXfASsCx1ZULI24BgmbgNb34Nk747wFRRDisa9GGwOHENugqcpLr2949FB2jAD48KCE7S6Jin97rVAN00ZyyUH5Cm"
+  }
+}

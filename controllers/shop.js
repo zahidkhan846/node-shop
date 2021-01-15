@@ -3,7 +3,7 @@ const Order = require("../models/order");
 
 const fs = require("fs");
 const path = require("path");
-const stripe = require("stripe")("Stripe Api key will go here");
+const stripe = require("stripe")(process.env.STRIPE_KEY);
 
 const pdfDocument = require("pdfkit");
 
