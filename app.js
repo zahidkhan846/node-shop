@@ -15,6 +15,9 @@ const User = require("./models/user");
 const multer = require("multer");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -120,7 +123,7 @@ app.use((error) => {
 mongoose
   .connect(MONGODB_URI)
   .then((result) => {
-    app.listen(3000);
+    app.listen(process.env.PORT || 3000);
   })
   .catch((err) => {
     console.log(err);
